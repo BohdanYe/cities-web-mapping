@@ -1,0 +1,120 @@
+{% extends 'spatial_analysis/base.html' %}
+
+{% block title %}
+{{ poi.poi_name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <a
+        href="{% url 'spatial_analysis:dashboard' %}"
+        class="btn btn-secondary btn-sm mb-4">
+        ← Back to Dashboard
+    </a>
+
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <h1>
+                {{ poi.poi_name }}
+            </h1>
+
+            <p class="text-muted">
+                {{ poi.get_poi_type_display }}
+            </p>
+
+            <p>
+                {{ poi.description }}
+            </p>
+
+            <p>
+                <strong>Rating:</strong>
+                {{ poi.rating }}
+            </p>
+
+            <p>
+                <strong>Visitors/day:</strong>
+                {{ poi.visitors_per_day }}
+            </p>
+
+            <p>
+                <strong>Location (lon, lat):</strong>
+
+                {% if poi.geom %}
+                    {{ poi.geom.x }},
+                    {{ poi.geom.y }}
+                {% else %}
+                    No location available
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <h3 class="mt-4">
+        Nearby Roads (within 1 km)
+    </h3>
+
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Road Name</th>
+                <th>Type</th>
+                <th>Speed Limit</th>
+                <th>Distance</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for road in nearby_roads %}
+
+        <tr>
+            <td>
+                {{ road.road_name }}
+            </td>
+
+            <td>
+                {{ road.get_road_type_display }}
+            </td>
+
+            <td>
+                {{ road.speed_limit }} km/h
+            </td>
+
+            <td>
+                {{ road.distance.m|floatformat:0 }} m
+            </td>
+        </tr>
+
+        {% empty %}
+
+        <tr>
+            <td colspan="4">
+                No roads found within 1 km.
+            </td>
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <h3 class="mt-4">
+        Geometry (GeoJSON)
+    </h3>
+
+    <pre class="bg-light p-3 border rounded">{{ poi_json }}</pre>
+
+</div>
+
+{% endblock %}
